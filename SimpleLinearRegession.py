@@ -1,5 +1,5 @@
 import numpy as np
-
+from metrics import r2_score
 
 class SimpleLinearRegression1:
 
@@ -25,6 +25,11 @@ class SimpleLinearRegression1:
             "must fit before predict!"
         predict_y = self.w_ * X + self.b_
         return predict_y
+
+    def score(self,x_test,y_test):
+        """根据测试数据返回模型的准确度"""
+        y_predict = self.predict(x_test)
+        return r2_score(y_test,y_predict)
 
     def __repr__(self):
         return "SimpleLinearRegression1()"
@@ -70,6 +75,14 @@ class SimpleLinearRegression2:
     def _predict(self, x_single):
         """给定单个待预测数据x，返回x的预测结果值"""
         return self.w_ * x_single + self.b_
+
+
+    def score(self,x_test,y_test):
+        """根据测试数据返回模型的准确度"""
+        y_predict = self.predict(x_test)
+        return r2_score(y_test,y_predict)
+
+
 
     def __repr__(self):
         return "SimpleLinearRegression1()"
