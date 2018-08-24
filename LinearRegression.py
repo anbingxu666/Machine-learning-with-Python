@@ -17,7 +17,7 @@ class LinearRegression():
         return self
 
     def fit_gd(self, X_train, y_train, eta=0.01, n_iters=1e4):
-        """根据训练数据集X_train, y_train, 使用梯度下降法训练Linear Regression模型"""
+        """根据训练数据集X_train, y_train, 使用Batch梯度下降法训练Linear Regression模型"""
         assert X_train.shape[0] == y_train.shape[0], \
             "the size of X_train must be equal to the size of y_train"
 
@@ -53,6 +53,41 @@ class LinearRegression():
         self.intercept_ = self._theta[0]
         self.coef_ = self._theta[1:]
 
+        return self
+
+    def fit_sgd(self,X_train,y_train,n_iters=5,t0=5,t1=50):
+
+        def dJ_theta_stochastic(x_i, y_i, theta):
+            return x_i.T.dot(x_i.dot(theta) - y_i) * 2.
+
+        def learning_rate(t):
+            return t0 / (t + t1)
+
+        def stochastic_gradient_descent(X_b, y_train,theta, n_iters):
+            iters_of_number = len(X_b)
+            for n in range(n_iters):
+                # shuffle X和y  （注意X_y之间的顺序有关系！）
+                X_y = np.hstack([X_b, y_train.reshape((-1, 1))])
+                np.random.shuffle(X_y)
+                X_b_new = X_y[:, 0:-1]
+                y_b_new = X_y[:, -1]
+
+                # 主要算法 因为X y 是随机序列 所以顺序取出来X y做随机梯度下降就可以
+                for i in range(iters_of_number):
+                    x_i = X_b_new[i]
+                    y_i = y_b_new[i]
+                    # 计算梯度
+                    grad = dJ_theta_stochastic(x_i, y_i, theta)
+                    # 更新theta
+                    theta = theta - learning_rate(iters_of_number*n+i) * grad
+            return theta
+
+        X_b = np.hstack([np.ones((len(X_train), 1)), X_train])
+        initial_theta = np.zeros(X_b.shape[1])
+        self._theta = stochastic_gradient_descent(X_b, y_train, initial_theta, n_iters)
+
+        self.intercept_ = self._theta[0]
+        self.cofficients_ = self._theta[1:]
         return self
 
     def predict(self,X):
