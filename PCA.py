@@ -43,7 +43,8 @@ class PCA:
             init_w = np.random.random(X_pca.shape[1])
             w = gradient_ascent_me(df_math,X_pca, init_w, eta=eta)
             self.components_[i,:] = w
-            X_pca = X_pca - X_pca.dot(w).reshape(-1, 1) * w
+            #下一个维度上的X_pca
+            X_pca = X_pca - X_pca.dot(w).reshape(-1, 1) * w    #画图理解！
 
         return self
     def transform(self,X):
